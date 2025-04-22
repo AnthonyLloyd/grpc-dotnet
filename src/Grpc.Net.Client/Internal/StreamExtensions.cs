@@ -128,7 +128,8 @@ internal static partial class StreamExtensions
                     {
                         using (var compressionStream = compressionProvider.CreateDecompressionStream(new LimitedLengthStream(responseStream, length)))
                         {
-                            lastLength = await ReadStreamToBuffers(compressionStream, buffer, moreBuffers, length, cancellationToken).ConfigureAwait(false);
+                            var underLohLength = Math.Min(length, 65536);
+                            lastLength = await ReadStreamToBuffers(compressionStream, buffer, moreBuffers, underLohLength, cancellationToken).ConfigureAwait(false);
                         }
                         call.DeserializationContext.SetPayload(BuffersToReadOnlySequence(buffer, moreBuffers, lastLength));
                         message = deserializer(call.DeserializationContext);
